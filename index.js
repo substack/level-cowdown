@@ -3,6 +3,8 @@ var AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN;
 var sub = require('subleveldown');
 
 var CowIterator = require('./lib/iterator.js');
+var prefix = require('./lib/prefix.js');
+var notFound = require('./lib/not_found.js');
 
 module.exports = Cow;
 inherits(Cow, AbstractLevelDOWN);
@@ -60,15 +62,3 @@ Cow.prototype._del = function (key, opts, cb) {
 Cow.prototype._iterator = function (opts) {
     return new CowIterator(this, opts);
 };
-
-function prefix (pre, key) {
-    if (typeof key === 'string') return pre + key;
-    if (Buffer.isBuffer(key)) {
-        return Buffer.concat([ new Buffer(pre), key ]);
-    }
-    throw new Error('unhandled key type');
-}
-
-function notFound (err) {
-    return err && (err.type === 'NotFoundError' || err.message === 'NotFound');
-}
