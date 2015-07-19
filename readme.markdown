@@ -1,4 +1,13 @@
-var cow = require('../');
+# level-cowdown
+
+copy-on-write leveldown
+
+# example
+
+We can make a lazy copy of the `src` database as the `copy` db:
+
+``` js
+var cow = require('level-cowdown');
 var levelup = require('levelup');
 var memdb = require('memdb');
 
@@ -26,3 +35,39 @@ function ready () {
         });
     });
 }
+```
+
+output:
+
+```
+b:src= 555
+a:copy= 100
+b:copy= 5000
+```
+
+# api
+
+``` js
+var cow = require('level-cowdown')
+```
+
+## var copy = cow(originaldb, newdb)
+
+Lazily make a copy of `originaldb`, storing data in `newdb`.
+
+Returns a leveldown `copy`.
+
+Note that if you modify `originaldb`, you will see those modifications in
+`newdb` unless `newdb` has operations on the same key.
+
+# install
+
+With [npm](https://npmjs.com) do:
+
+```
+npm install level-cowdown
+```
+
+# license
+
+MIT
