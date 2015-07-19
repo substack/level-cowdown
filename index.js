@@ -1,6 +1,7 @@
 var inherits = require('inherits');
 var AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN;
 var sub = require('subleveldown');
+var xtend = require('xtend');
 
 var CowIterator = require('./lib/iterator.js');
 var prefix = require('./lib/prefix.js');
@@ -61,4 +62,25 @@ Cow.prototype._del = function (key, opts, cb) {
 
 Cow.prototype._iterator = function (opts) {
     return new CowIterator(this, opts);
+};
+
+Cow.prototype._batch = function (rows, opts, cb) {
+    var ops = [];
+    rows.forEach(function (row) {
+        var dkey = prefix('d', row.key);
+        var nkey = prefix('n', row.key);
+        if (row.type === 'put') {
+            ops.push(
+                { type: 'del', key: dkey },
+                xtend(row, { key: nkey })
+            );
+        }
+        else if (row.type === 'del') {
+            ops.push(
+                { type: 'put', key: dkey, value: '0', valueEncoding: 'utf8' },
+                xtend(row, { key: nkey })
+            );
+        }
+    });
+    this._ndb.batch(ops, opts, cb);
 };
