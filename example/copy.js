@@ -1,30 +1,28 @@
 var cow = require('../');
 var levelup = require('levelup');
 var memdb = require('memdb');
-var db = memdb();
-var sub = require('subleveldown');
 
-var db0 = sub(db, '0', { valueEncoding: 'json' });
-db0.batch([
+var src = memdb({ valueEncoding: 'json' });
+src.batch([
     { type: 'put', key: 'a', value: 100 },
     { type: 'put', key: 'b', value: 555 },
     { type: 'put', key: 'c', value: 300 },
 ], ready);
 
 function ready () {
-    var db1 = levelup('fake', {
-        db: function () { return cow(db0, sub(db, '1')) },
+    var copy = levelup('fake', {
+        db: function () { return cow(src, memdb()) },
         valueEncoding: 'json'
     });
-    db1.get('a', function (err, value) {
+    copy.get('a', function (err, value) {
         console.log('a=', value);
     });
-    db1.put('b', 5000, function (err) {
-        db0.get('b', function (err, value) {
-            console.log('b:db0=', value);
+    copy.put('b', 5000, function (err) {
+        src.get('b', function (err, value) {
+            console.log('b:src=', value);
         });
-        db1.get('b', function (err, value) {
-            console.log('b:db1=', value);
+        copy.get('b', function (err, value) {
+            console.log('b:copy=', value);
         });
     });
 }
