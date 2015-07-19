@@ -52,7 +52,7 @@ Cow.prototype._del = function (key, opts, cb) {
     var dkey = prefix('d', key);
     var nkey = prefix('n', key);
     this._ndb.batch([
-        { type: 'put', key: dkey, value: '', valueEncoding: 'utf8' },
+        { type: 'put', key: dkey, value: '0', valueEncoding: 'utf8' },
         { type: 'del', key: nkey },
     ], opts, cb)
 };
