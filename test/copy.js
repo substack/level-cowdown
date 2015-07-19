@@ -5,7 +5,7 @@ var memdb = require('memdb');
 var sub = require('subleveldown');
 
 test('copy', function (t) {
-    t.plan(3);
+    t.plan(7);
     var db = memdb();
     var db0 = sub(db, '0', { valueEncoding: 'json' });
     db0.batch([
@@ -20,13 +20,17 @@ test('copy', function (t) {
             valueEncoding: 'json'
         });
         db1.get('a', function (err, value) {
+            t.ifError(err);
             t.equal(value, 100, 'a:db1=100');
         });
         db1.put('b', 5000, function (err) {
+            t.ifError(err);
             db0.get('b', function (err, value) {
+                t.ifError(err);
                 t.equal(value, 555, 'b:db0=555');
             });
             db1.get('b', function (err, value) {
+                t.ifError(err);
                 t.equal(value, 5000, 'b:db1=5000');
             });
         });
