@@ -6,8 +6,8 @@ var sub = require('subleveldown');
 
 test('copy', function (t) {
     t.plan(3);
-    var db = memdb({ valueEncoding: 'json' });
-    var db0 = sub(db, '0');
+    var db = memdb();
+    var db0 = sub(db, '0', { valueEncoding: 'json' });
     db0.batch([
         { type: 'put', key: 'a', value: 100 },
         { type: 'put', key: 'b', value: 555 },
@@ -15,7 +15,10 @@ test('copy', function (t) {
     ], ready);
 
     function ready () {
-        var db1 = levelup('', { db: function () { return cow(db0, sub(db, '1')) } });
+        var db1 = levelup('', {
+            db: function () { return cow(db0, sub(db, '1')) },
+            valueEncoding: 'json'
+        });
         db1.get('a', function (err, value) {
             t.equal(value, 100, 'a:db1=100');
         });

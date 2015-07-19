@@ -1,10 +1,10 @@
 var cow = require('../');
 var levelup = require('levelup');
 var memdb = require('memdb');
-var db = memdb({ valueEncoding: 'json' });
+var db = memdb();
 var sub = require('subleveldown');
 
-var db0 = sub(db, '0');
+var db0 = sub(db, '0', { valueEncoding: 'json' });
 db0.batch([
     { type: 'put', key: 'a', value: 100 },
     { type: 'put', key: 'b', value: 555 },
@@ -12,7 +12,10 @@ db0.batch([
 ], ready);
 
 function ready () {
-    var db1 = levelup('', { db: function () { return cow(db0, sub(db, '1')) } });
+    var db1 = levelup('fake', {
+        db: function () { return cow(db0, sub(db, '1')) },
+        valueEncoding: 'json'
+    });
     db1.get('a', function (err, value) {
         console.log('a=', value);
     });
