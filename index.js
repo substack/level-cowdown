@@ -1,6 +1,5 @@
 var inherits = require('inherits');
 var AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN;
-var sub = require('subleveldown');
 var xtend = require('xtend');
 
 var CowIterator = require('./lib/iterator.js');
